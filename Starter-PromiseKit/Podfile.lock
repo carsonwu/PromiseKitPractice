@@ -1,0 +1,27 @@
+PODS:
+  - PromiseKit (6.3.4):
+    - PromiseKit/CorePromise (= 6.3.4)
+    - PromiseKit/Foundation (= 6.3.4)
+    - PromiseKit/UIKit (= 6.3.4)
+  - PromiseKit/CoreLocation (6.3.4):
+    - PromiseKit/CorePromise
+  - PromiseKit/CorePromise (6.3.4)
+  - PromiseKit/Foundation (6.3.4):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.3.4):
+    - PromiseKit/CorePromise
+
+DEPENDENCIES:
+  - PromiseKit
+  - PromiseKit/CoreLocation
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - PromiseKit
+
+SPEC CHECKSUMS:
+  PromiseKit: e1425568123ec844a944c93f2bcb29d511d39cf5
+
+PODFILE CHECKSUM: d9b1e88082748d0ae70f701f51db72f3241968e6
+
+COCOAPODS: 1.5.2
