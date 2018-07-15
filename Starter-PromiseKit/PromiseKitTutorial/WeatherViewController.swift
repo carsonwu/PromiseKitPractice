@@ -139,9 +139,17 @@ class WeatherViewController: UIViewController {
 extension WeatherViewController: UITextFieldDelegate {
   
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    guard let _ = textField.text else { return true }
     
-    handleMockLocation()
+    textField.resignFirstResponder()
+    
+    guard let text = textField.text else { return true }
+    
+    locationHelper.searchPlacemark(with: text).done { (placemarks) in
+        self.handleLocation(placemark: placemarks.last!)
+        }.catch { (error) in
+            self.conditionLabel.text = error.localizedDescription
+            self.conditionLabel.textColor = errorColor
+    }
     
     return true
   }

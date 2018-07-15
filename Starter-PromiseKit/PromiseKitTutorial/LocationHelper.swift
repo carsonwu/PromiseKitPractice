@@ -31,7 +31,11 @@ class LocationHelper {
     func getLocation() -> Promise<[CLPlacemark]> {
         /*return BrokenPromise()*/
         return CLLocationManager.requestLocation().then({ locations in
-            return self.coder.reverseGeocode(location: locations.last!)
+            return CLGeocoder().reverseGeocode(location: locations.last!)
         })
+    }
+    
+    func searchPlacemark(with address: String) -> Promise<[CLPlacemark]> {
+        return CLGeocoder().geocode(address)
     }
 }
