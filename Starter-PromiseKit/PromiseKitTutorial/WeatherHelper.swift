@@ -80,6 +80,19 @@ class WeatherHelper {
             let urlString = "http://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(appID)"
             let url = URL(string: urlString)!
             let request = URLRequest(url: url)
+            let session = URLSession.shared
+            session.dataTask(.promise, with: request).compactMap({ (data, response)/* -> [String : Any]?*/ in
+                // Return type [String : Any]? can be inferred from the single statement below
+                try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
+            }).compactMap{
+                //Return type is inferred from the below statement & argument is inferred from Shorthand Argument Names $0. Thus all the arguments and return type can be ommitted
+                Weather(jsonDictionary: $0)
+            }.done({ (weather) in
+                seal.fulfill(weather)
+            }).catch({ (error) in
+                seal.reject(error)
+            })
+            /*
             let dataTask = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
                 if let data = data,
                     let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String : Any],
@@ -93,6 +106,7 @@ class WeatherHelper {
                 }
             })
             dataTask.resume()
+            */
         }
     }
   
