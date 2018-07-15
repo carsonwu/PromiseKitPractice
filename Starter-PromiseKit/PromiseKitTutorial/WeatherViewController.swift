@@ -49,9 +49,26 @@ class WeatherViewController: UIViewController {
     updateWithCurrentLocation()
   }
   
-  private func updateWithCurrentLocation() {
-    handleMockLocation()
-  }
+  
+    private func updateWithCurrentLocation() {
+        /* handleMockLocation() */
+        locationHelper.getLocation().done { placemarks in
+            self.handleLocation(placemark: placemarks.last!)
+            }.catch { (error) in
+                self.placeLabel.text = "--"
+                self.tempLabel.text = "--"
+                
+                //Handle permission error specifically
+                switch error{
+                case CLLocationManager.PMKError.notAuthorized:
+                    self.conditionLabel.text = "Enable Location Permissions in Settings"
+                    self.conditionLabel.textColor = UIColor.white
+                default:
+                    self.conditionLabel.text = error.localizedDescription
+                    self.conditionLabel.textColor = errorColor
+                }
+        }
+    }
   
   fileprivate func handleMockLocation() {
     self.handleLocation(city: "Athens", state: "Greece", latitude: 37.966667, longitude: 23.716667)

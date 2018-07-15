@@ -52,6 +52,7 @@ class WeatherHelper {
     }
   }
   
+    /*
   func getWeatherTheOldFashionedWay(latitude: Double, longitude: Double, completion: @escaping (Weather?, Error?) -> ()) {
     
     assert(appID == "9f1c96cbc2e7e39a1bf48077d7e6cdc5", "You need to set your API key!")
@@ -74,6 +75,7 @@ class WeatherHelper {
     }
     dataTask.resume()
   }
+    */
     
     func getWeatherFrom(latitude: Double, longitude: Double) -> Promise<Weather> {
         return Promise { seal in

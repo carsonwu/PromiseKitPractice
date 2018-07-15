@@ -26,11 +26,12 @@ import CoreLocation
 import PromiseKit
 
 
-class LocationHelper  {
-  let coder = CLGeocoder()
-  
-  func getLocation() -> Promise<CLPlacemark> {
-    return BrokenPromise()
-  }
-  
+class LocationHelper {
+    let coder = CLGeocoder()
+    func getLocation() -> Promise<[CLPlacemark]> {
+        /*return BrokenPromise()*/
+        return CLLocationManager.requestLocation().then({ locations in
+            return self.coder.reverseGeocode(location: locations.last!)
+        })
+    }
 }
