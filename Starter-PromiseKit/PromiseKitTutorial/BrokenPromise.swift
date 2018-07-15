@@ -25,8 +25,9 @@ import Foundation
 import PromiseKit
 
 func BrokenPromise<T>(method: String = #function) -> Promise<T> {
-  return Promise<T>() { fulfill, reject in
+    //Update to PromiseKit 6 initializer. [Ref: https://promisekit.org/news/2018/02/PromiseKit-6.0-Released/]
+  return Promise<T>() { seal in
     let err = NSError(domain: "PromiseKitTutorial", code: 0, userInfo: [NSLocalizedDescriptionKey: "'\(method)' has not been implemented yet."])
-    reject(err)
+    seal.reject(err)
   }
 }

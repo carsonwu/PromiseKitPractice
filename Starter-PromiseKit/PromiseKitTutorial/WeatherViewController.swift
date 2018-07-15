@@ -65,6 +65,7 @@ class WeatherViewController: UIViewController {
                    longitude: placemark.location!.coordinate.longitude)
   }
   
+    /*
   func handleLocation(city: String?, state: String?, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
     if let city = city, let state = state {
       self.placeLabel.text = "\(city), \(state)"
@@ -81,6 +82,21 @@ class WeatherViewController: UIViewController {
       self.updateUIWithWeather(weather: weather)
     }
   }
+ */
+    
+    func handleLocation(city: String?, state: String?, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        if let city = city,
+            let state = state {
+            placeLabel.text = "\(city), \(state)"
+        }
+        weatherAPI.getWeatherFrom(latitude: latitude, longitude: longitude).done { (weather) in
+            self.updateUIWithWeather(weather: weather)
+            }.catch { (error) in
+                self.tempLabel.text = "--"
+                self.conditionLabel.text = error.localizedDescription
+                self.conditionLabel.textColor = errorColor
+        }
+    }
 
   private func updateUIWithWeather(weather: WeatherHelper.Weather) {
     let tempMeasurement = Measurement(value: weather.tempInK, unit: UnitTemperature.kelvin)

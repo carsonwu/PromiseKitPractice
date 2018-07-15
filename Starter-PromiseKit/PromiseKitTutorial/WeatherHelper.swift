@@ -24,7 +24,7 @@
 import Foundation
 import PromiseKit
 
-fileprivate let appID = "<#Enter Your API Key from http://openweathermap.org/appid#>"
+fileprivate let appID = "9f1c96cbc2e7e39a1bf48077d7e6cdc5"
 
 class WeatherHelper {
   
@@ -54,7 +54,7 @@ class WeatherHelper {
   
   func getWeatherTheOldFashionedWay(latitude: Double, longitude: Double, completion: @escaping (Weather?, Error?) -> ()) {
     
-    assert(appID != "<#Enter Your API Key from http://openweathermap.org/appid#>", "You need to set your API key!")
+    assert(appID == "9f1c96cbc2e7e39a1bf48077d7e6cdc5", "You need to set your API key!")
     
     let urlString = "http://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(appID)"
     let url = URL(string: urlString)!
@@ -73,7 +73,28 @@ class WeatherHelper {
       completion(result, nil)
     }
     dataTask.resume()
-  }  
+  }
+    
+    func getWeatherFrom(latitude: Double, longitude: Double) -> Promise<Weather> {
+        return Promise { seal in
+            let urlString = "http://api.openweathermap.org/data/2.5/weather?lat=\(latitude)&lon=\(longitude)&appid=\(appID)"
+            let url = URL(string: urlString)!
+            let request = URLRequest(url: url)
+            let dataTask = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+                if let data = data,
+                    let json = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String : Any],
+                    let result = Weather(jsonDictionary: json) {
+                        seal.fulfill(result)
+                }else if let err = error{
+                    seal.reject(err)
+                }else{
+                    let error = NSError(domain: "PromiseKitTutorial", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unknown error"])
+                    seal.reject(error)
+                }
+            })
+            dataTask.resume()
+        }
+    }
   
   private func saveFile(named: String, data: Data, completion: @escaping (Error?) -> Void) {
     DispatchQueue.global(qos: .background).async {
