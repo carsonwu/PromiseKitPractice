@@ -139,8 +139,34 @@ class WeatherHelper {
             let urlString = "http://openweathermap.org/img/w/\(iconName).png"
             let url = URL(string: urlString)!
             let request = URLRequest(url: url)
-            URLSession.shared.dataTask(.promise, with: request).compactMap(on: DispatchQueue.global(qos: .background), flags: [], {
-                UIImage(data: $0.data)
+            URLSession.shared.dataTask(.promise, with: request).then({ (data, response) -> Promise<(data: Data, response: URLResponse)> in
+                // Option 2: Put save image action into the promise chain which means it will become a dependence to all subsequent actions. It will proceed only when image is successfully saved into device, and if it fails, the promise chain breaks. (I personally prefer the first option since save image action should be a standalone action and it's failure should not cause the subsequent actions fail)
+                return Promise {seal in
+                    self.saveFile(named: iconName, data: data, completion: { (error) in
+                        if let error = error {
+                            print("Something went wrong when saving image into device: \(error.localizedDescription)")
+                            seal.reject(error)
+                        }else{
+                            print("Image is saved into device")
+                            seal.fulfill((data, response))
+                        }
+                    })
+                }
+            })
+                .compactMap(on: DispatchQueue.global(qos: .background), flags: [], {
+                
+                // Option 1: Save image data into device alone and all subsequent actions have no dependence on it. (So even if the action fails, no subsequent actions will be affected)
+                /*
+                self.saveFile(named: iconName, data: $0.data, completion: { (error) in
+                    if let error = error {
+                        print("Something went wrong when saving image into device: \(error.localizedDescription)")
+                    }else{
+                        print("Image is saved into device")
+                    }
+                })
+                 */
+                
+                return UIImage(data: $0.data)
             }).done{
                 seal.fulfill($0)
                 }.catch({ (error) in
