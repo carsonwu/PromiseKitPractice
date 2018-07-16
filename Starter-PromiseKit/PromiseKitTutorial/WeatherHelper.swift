@@ -111,6 +111,43 @@ class WeatherHelper {
             */
         }
     }
+    
+    func getWeatherIcon(with iconName: String) -> Promise<UIImage> {
+        return Promise { seal in
+            
+            //First, try to load image from device
+            getFile(named: iconName, completion: { image in
+                if let image = image {
+                    print("Loaded image from device")
+                    seal.fulfill(image)
+                }else{
+                    
+                    //Second, download the image from web if the image does not exist in device
+                    self.getWeatherIconFromWeb(iconName: iconName).done({ (image) in
+                        print("Loaded image from web")
+                        seal.fulfill(image)
+                    }).catch({ (error) in
+                        seal.reject(error)
+                    })
+                }
+            })
+        }
+    }
+    
+    func getWeatherIconFromWeb(iconName: String) -> Promise<UIImage> {
+        return Promise { seal in
+            let urlString = "http://openweathermap.org/img/w/\(iconName).png"
+            let url = URL(string: urlString)!
+            let request = URLRequest(url: url)
+            URLSession.shared.dataTask(.promise, with: request).compactMap(on: DispatchQueue.global(qos: .background), flags: [], {
+                UIImage(data: $0.data)
+            }).done{
+                seal.fulfill($0)
+                }.catch({ (error) in
+                    seal.reject(error)
+                })
+        }
+    }
   
   private func saveFile(named: String, data: Data, completion: @escaping (Error?) -> Void) {
     DispatchQueue.global(qos: .background).async {

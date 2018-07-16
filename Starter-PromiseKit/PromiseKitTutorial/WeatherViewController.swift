@@ -106,8 +106,11 @@ class WeatherViewController: UIViewController {
             let state = state {
             placeLabel.text = "\(city), \(state)"
         }
-        weatherAPI.getWeatherFrom(latitude: latitude, longitude: longitude).done { (weather) in
+        weatherAPI.getWeatherFrom(latitude: latitude, longitude: longitude).then { (weather) -> Promise<UIImage> in
             self.updateUIWithWeather(weather: weather)
+            return self.weatherAPI.getWeatherIcon(with: weather.iconName)
+            }.done(on: DispatchQueue.main, flags: []) { (image) in
+                self.iconImageView.image = image
             }.catch { (error) in
                 self.tempLabel.text = "--"
                 self.conditionLabel.text = error.localizedDescription
