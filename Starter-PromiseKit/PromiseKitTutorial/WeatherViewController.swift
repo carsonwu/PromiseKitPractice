@@ -68,6 +68,12 @@ class WeatherViewController: UIViewController {
                     self.conditionLabel.textColor = errorColor
                 }
         }
+        
+        after(seconds: oneHour).done {
+            self.updateWithCurrentLocation()
+        }
+        
+        
     }
   
   fileprivate func handleMockLocation() {
